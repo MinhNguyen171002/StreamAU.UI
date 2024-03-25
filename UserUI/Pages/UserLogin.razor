@@ -1,0 +1,68 @@
+﻿@page "/login"
+@using UserUI.Data.Service
+@using UserUI.Data.Model
+@inject NavigationManager NavigationManager
+@inject Service service
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<section class="vh-100 gradient-custom">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div class="card bg-dark text-white" style="border-radius: 1rem;">
+                    <div class="card-body p-5 text-center">
+                        <div class="mb-md-5 mt-md-4 pb-5">
+                            <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
+                            <p class="text-white-50 mb-5">Please enter your login and password!</p>
+                            <EditForm Model="@loginModel">
+                                <DataAnnotationsValidator />
+                                <div class="mb-3">
+                                    <label class="form-label" for="UserName">Name</label>
+                                    <div class="form-outline form-white mb-4">
+                                        <InputText id= "UserName" class="form-control" @bind-Value="loginModel.Username" />
+                                    </div>
+                                    <ValidationMessage For="@(() => loginModel.Username)" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="Name" class="form-label">Password</label>
+                                    <div class="form-outline form-white mb-4">
+                                        <InputText id="PassWord"  class="form-control" @bind-Value="loginModel.Password" />
+                                    </div>
+                                    <ValidationMessage For="@(() => loginModel.Password)" />
+                                </div>
+                                <div class="form-check d-flex justify-content-center mb-5">
+                                    <InputCheckbox class="form-check" id="form2Example3cg" @bind-Value="loginModel.RememberMe" />
+                                    <label class="form-check-label" for="form2Example3g">
+                                        Remember Me
+                                    </label>
+                                </div>
+                                <ValidationMessage For="@(() => loginModel.RememberMe)" />
+                                <div class="form-group">
+                                    <button type="submit" @onclick="Login" class="btn btn-primary">Login</button>
+                                </div>
+                            </EditForm>
+                            <div>
+                                <p class="mb-0">
+                                    Don't have an account? <a href="register" class="text-white-50 fw-bold">Sign Up</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    private LoginModel loginModel = new LoginModel();
+    private async void Login()
+    {
+       var result = await service.UserLogin(loginModel);
+        if (result.Status)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+}

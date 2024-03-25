@@ -1,0 +1,240 @@
+﻿.container {
+	position: relative;
+	margin: 0 auto;
+	background-color: #90caf9;
+}
+	.container .content {
+		position: absolute; 
+		bottom: 0; 
+		background: rgb(0, 0, 0);
+		background: rgba(0, 0, 0, 0.5); 
+		background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+		color: #f1f1f1;
+		width:97.3%;
+		padding: 20px; 
+	}
+	.container .thumbnail {
+		margin-bottom: 7px;
+		border-radius: 5px;
+		width: 100%;
+		height: 420px;
+		background-color: #90caf9;
+	}
+	@media (max-width: 450px){
+		.container .thumbnail{
+			width: 100%;
+			height: 230px;
+			border-radius: 0;
+		}
+		.container .content {
+			width:95%;
+		}
+
+	}
+
+		.loader {
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: #fff;
+			transition: opacity 0.75s, visibility 0.75s;
+		}
+
+.loader--hidden {
+	opacity: 0;
+	visibility: hidden;
+}
+
+.loader::after {
+	content: '';
+	width: 75px;
+	height: 75px;
+	border: 15px solid #ddd;
+	border-top-color: #009578;
+	border-radius: 50%;
+	animation: loading 0.75s ease infinite;
+}
+
+@keyframes loading {
+	from {
+		transform: rotate(0turn);
+	}
+
+	to {
+		transform: rotate(1turn);
+	}
+}
+
+.add-message-container {
+	position:sticky;
+	top:20%;
+	left:60%;
+	transform: translate(-50%, -50%);
+	background-color: #f0f0f0;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	text-align: center;
+	width: 80%;
+	max-width: 400px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+@media(max-width: 450px) {
+	.add-message-container {
+		top:250px;
+		left: 50%;
+	}
+}
+.action {
+	padding: 10px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.tab {
+	overflow: hidden;
+	border: 1px solid #ccc;
+	background-color: #a2f5f9;
+}
+
+/* Style the buttons that are used to open the tab content */
+	.tab button {
+		background-color: inherit;
+		float: left;
+		border: none;
+		outline: none;
+		cursor: pointer;
+		padding: 14px 16px;
+		transition: 0.3s;
+		font-family: 'Your Preferred Font', sans-serif;
+	}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+.video-list-container {
+	flex: 1 1 350px;
+	height: 485px;
+	overflow-y: scroll;
+	border-radius: 5px;
+	box-shadow: 0 5px 15px rgb(0, 0, 0, .1);
+	background-color: #28b5f4;
+}
+
+.video-list-container::-webkit-scrollbar {
+	width: 3px;
+}
+
+.video-list-container::-webkit-scrollbar-track {
+	background-color: #fff;
+	border-radius: 3px;
+}
+
+	.video-list-container::-webkit-scrollbar-thumb {
+		background-color: #bbdefb;
+		border-radius: 3px;
+	}
+	.video-list-container .list {
+		display: flex;
+		align-items: center;
+		gap: 15px;
+		padding: 10px;
+		background-color: #42a5f5;
+		cursor: pointer;
+		border-radius: 5px;
+		margin-bottom: 10px;
+	}
+	.video-list-container .list.active {
+		background-color: #a36cb8;
+	}
+
+		.video-list-container .list.active .list-title {
+			color: #fff;
+		}
+
+	.video-list-container .list:last-child {
+		margin-bottom: 0;
+	}
+
+	.video-list-container .list .list-video {
+		width: 100px;
+		border-radius: 5px;
+	}
+
+	.video-list-container .list .list-title {
+		font-size: 17px;
+		color: #444;
+	}
+
+#search-btn i {
+	margin-right: 0.5rem;
+}
+
+#search-btn:hover {
+	background: linear-gradient(to right, #ff4136, #ff6b6b);
+}
+
+#container-search {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 3px 0px 3px 0px;
+	background-color: #bcbefb;
+}
+
+	#container-search .search-box {
+		background: #a2f5f9;
+		border-radius: 30px;
+	}
+
+	#container-search .search-text {
+		border: none;
+		outline: none;
+		background: none;
+		font-size: 18px;
+		width: 330px;
+		padding: 10px 0px 10px 15px;
+	}
+
+	#container-search .search-btn {
+		background-color: #c7c3c3;
+		cursor: pointer;
+		border: none;
+		padding: 15px;
+		border-radius: 50%;
+	}
+
+	#container-search .search-voice {
+		background-color: #c7c3c3;
+		cursor: pointer;
+		border: none;
+		padding: 15px;
+		border-radius: 50%;
+	}
+
+	#container-search .shazam-voice {
+		background-color: #c7c3c3;
+		cursor: pointer;
+		border: none;
+		padding: 15px;
+		border-radius: 50%;
+	}
+	@media(max-width:450px){
+		#container-search{
+			width:100%;
+		}
+		#container-search .search-box{
+			width:100%;
+		}
+	}

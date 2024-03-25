@@ -1,0 +1,26 @@
+﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
+@using UserUI.Data.Service
+@using UserUI.Data.Model
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@inject NavigationManager NavigationManager
+
+@inject Service YoutubeService
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+    <main>       
+        <div class="top-row px-4">
+            <UserUI.Pages.LoginDisplay />
+        </div>
+        <article class="content px-4">
+         @Body
+        </article>
+    </main>
+</div>
+@code{
+   
+}

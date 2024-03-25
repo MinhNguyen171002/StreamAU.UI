@@ -1,0 +1,203 @@
+﻿@page "/onplay"
+
+@using UserUI.Data.Service
+@using UserUI.Data.Model
+@inject Service YoutubeService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+<div id="container-search">
+    <div class="search-box">
+        <input type="text" class="search-text" placeholder="Bạn muốn tìm gì ?"  @bind="@search" @oninput="OnInputEvent" />
+        <button @onclick="SearchVideo" class="search-btn">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+    </div>
+</div>
+@if (videos == null)
+{
+    <div class="loader"></div>
+}
+else
+{
+    <AuthorizeView>
+        <Authorized>
+            <body>
+                <div class="container">
+                    <div class="main-video-container">
+                        <iframe src="https://www.youtube.com/embed/@VideoId" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen preload="metadata" class="main-video"></iframe>
+                        <h3 class="main-vid-title">@title <button @onclick="() =>Show()" class="love-btn"><i class="fa-solid fa-heart"></i></button>
+                            <div class="add-message-container" hidden=@IsShow>
+                                <div class="action">
+                                <input type="text" class="search-input" @bind="@plname" @oninput="InputEvent" placeholder="Tạo danh sách mới" />
+                                <button type="submit" @onclick="()=>AddPlist(context.User.Identity.Name)" class="add-btn">Add</button>
+                                </div>
+                                <div class="playlist">
+                                    @if (context.User.Identity.Name == null && playLists == null)
+                                    {
+                                        <p><em>Loading.....</em></p>
+                                    }
+                                    else                                   
+                                    {
+                                        @foreach (var playlist in playLists)
+                                        { 
+                                            <div class="lalbeplaylist-container">
+                                                <div class="lalbeplaylist" @onclick="()=>ListDetail(playlist.PlayListId)">@playlist.PlayListName</div>
+                                                <button type="submit" class="btn-lalbe" @onclick="()=>AddVideo(context.User.Identity.Name,playlist.PlayListId)">+</button>
+                                            </div>
+                                            
+                                        }
+                                    }
+                                </div>     
+                            </div>
+                        </h3>
+                    </div>
+                    <div class="video-list-container">
+                        <h3 class="title" @onclick="()=>Changed()">@TitlePl</h3>
+                        @if (IsChange == true)
+                        {
+                            <div class="video-list-container">
+                                @foreach (var video in videos)
+                                {
+                                    <div class="list active" @onclick="() => GetId(video.VideoId,video.Title)">
+                                            <img src="@video.Thumbnail" alt="Video Thumbnail" class="list-video">
+                                            <h3 class="list-title">@video.Title</h3>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="video-list-container">
+                                @if (details == null)
+                                {
+                                    <p><em>Waiting......</em></p>
+                                }
+                                else
+                                {
+                                    @foreach (var video in details)
+                                    {
+                                        <div class="list active" @onclick="() => GetId(video.VideoId,video.Title)">
+                                                <img src="@video.Thumbnail" alt="Video Thumbnail" class="list-video">
+                                                <h3 class="list-title">@video.Title</h3>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </body>
+        </Authorized>
+        <NotAuthorized>
+            <body>
+            <div class="container">
+                <div class="main-video-container">
+                <iframe src="https://www.youtube.com/embed/@VideoId" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen preload="metadata" class="main-video"></iframe>
+                        <h3 class="main-vid-title">@title <button @onclick="() =>Show()" class="love-btn"><i class="fa-solid fa-heart"></i></button> </h3>
+                        <div class="login-message" hidden=@IsShow>
+                            @if (context.User.Identity.Name == null)
+                            {
+                                <p class="text-center text-muted mt-5 mb-0">Bạn đã có tài khoản chưa? <a href="login" class="fw-bold text-body"><u>Đăng nhập!</u></a></p>
+                            }
+                        </div>
+                </div>
+                <div class="video-list-container">
+                    @foreach (var video in videos)
+                    {
+                        <div class="list active" @onclick="() => GetId(video.VideoId, video.Title)">
+                            <img src="@video.Thumbnail" alt="Video Thumbnail" class="list-video">
+                            <h3 class="list-title">@video.Title</h3>
+                        </div>
+                    }
+                </div>
+            </div>
+            </body>
+        </NotAuthorized>
+    </AuthorizeView>
+
+}
+@code {
+    private List<UserPlayList> playLists;
+    private List<YoutubeVideos> videos;
+    private List<YoutubeVideo> details;
+    private YoutubeVideo video;
+    ClaimsPrincipal ClaimsPrincipalUser;
+    private bool IsShow { get; set; } = true;
+    private bool IsChange { get; set; } = true;
+    private string VideoId { get; set; }
+    private string title { get; set; }
+    private string search { get; set; }
+    private string plname { get; set; }
+    private string TitlePl { get; set; } = "Video";
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        ClaimsPrincipalUser = authState.User;
+
+        if (ClaimsPrincipalUser.Identity != null)
+        {
+            var useridentity = ClaimsPrincipalUser.Identity.Name;
+            playLists = await YoutubeService.GetUserList(useridentity);
+        }
+        else
+        {
+
+        }
+    }
+    protected async Task SearchVideo()
+    {
+        videos = await YoutubeService.SearchAsync(search);
+    }
+    private void GetId(string id, string titleVideo) 
+    {
+        VideoId = id;
+        title = titleVideo;
+    }
+    private void OnInputEvent(ChangeEventArgs changeEvent)
+    {
+        search = (string)changeEvent.Value;
+    }
+    private void InputEvent(ChangeEventArgs changeEvent)
+    {
+        plname = (string)changeEvent.Value;
+    }
+    private void Show()
+    {
+        IsShow = !IsShow;
+    }
+    private void Changed()
+    {
+        IsChange = !IsChange;
+        if (IsChange == true)
+        {
+            TitlePl = "Video";
+        }
+        else
+        {
+            TitlePl = "User Playlist";
+        }
+    }
+
+    private async Task AddVideo(string name, Guid plid)
+    {
+        foreach(var a in videos)
+        {
+            if (a.VideoId.Equals(VideoId))
+            {
+                video.VideoId = a.VideoId;
+                video.Thumbnail = a.Thumbnail;
+                video.Title = a.Title;
+                video.PlayListId = plid;
+                video.UserName = name;
+            }
+        }
+    }
+    private async Task AddPlist(string name)
+    {
+        await YoutubeService.AddplayList(name, plname);
+    }
+    private async Task ListDetail(Guid id)
+    {
+        details = await YoutubeService.GetVideoDetail(id);
+    }
+}

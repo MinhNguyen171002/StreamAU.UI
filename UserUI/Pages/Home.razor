@@ -1,0 +1,110 @@
+﻿@page "/"
+@using UserUI.Data.Service
+@using UserUI.Data.Model
+@inject Service YoutubeService
+@inject NavigationManager NavigationManager
+@if (videos == null)
+{
+    @if(video == null)
+    {
+        <div class="loader"></div>
+    }
+}
+else
+{
+    <div id="container-search">
+        <div class="search-box">
+            <input type="text" class="search-text" placeholder="@search" @bind="@search" @oninput="OnInputEvent" />
+            <button @onclick="SearchKey" class="search-btn">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            <button @onclick="On" class="search-btn">
+                <i class="fas fa-microphone-alt"></i>
+            </button>
+            <button @onclick="Stop" class="search-voice">
+                <i class="fas fa-microphone-alt-slash"></i>
+            </button>
+        </div>
+    </div>
+    <div class="container" @onclick="()=>Navigation(video.VideoId,video.Title)">
+        <img src="@video.Thumbnail" alt="Video Thumbnail" class="thumbnail">
+        <div class="content">@video.Title</div>
+    </div>
+    <div class="tab">
+        <button @onclick="@(_=>GetValue("VN"))">Việt Nam</button>
+        <button @onclick="@(_=>GetValue("US"))">US-UK</button>
+        <button @onclick="@(_=>GetValue("KR"))">KPop</button>
+        <button @onclick="@(_=>GetValue("JP"))">JPop</button>
+    </div>
+    <div class="video-list-container">
+        @foreach (var a in videos)
+        {
+            <div class="list active" @onclick="()=>Navigation(a.VideoId,a.Title)">
+                <img src="@a.Thumbnail" alt="Video Thumbnail" class="list-video">
+                <h3 class="list-title">@a.Title</h3>
+            </div>
+        }
+    </div>
+
+} 
+@code {
+
+    private List<YoutubeVideos> videos;
+    private YoutubeVideos video;
+    private string search { get; set; }
+    private bool isShow = true;
+    protected void GetFirst()
+    {
+        if (videos != null)
+        {
+            video = videos.FirstOrDefault();
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        videos = await YoutubeService.RemcomAsync("VN");
+        GetFirst();
+    }
+    protected async Task GetValue(string value)
+    {
+        videos = await YoutubeService.RemcomAsync(value);
+        GetFirst();
+    }   
+    protected void Navigation(string id,string title)
+    {
+        NavigationManager.NavigateTo("/player" + "/" + id + "/" + title);
+    }
+    protected async Task SearchKey()
+    {
+        if (search != null)
+        {
+            videos = await YoutubeService.SearchAsync(search);
+            GetFirst();
+        }
+    }
+    private void OnInputEvent(ChangeEventArgs changeEvent)
+    {
+        search = (string)changeEvent.Value;
+    }
+    protected void On()
+    {
+        YoutubeService.StartListen();
+    }
+    protected void Stop()
+    {
+        YoutubeService.StopListen();
+    }
+    void ShoW()
+    {
+        isShow = !isShow;
+    }
+    async Task Speech()
+    {
+        //await YoutubeService.SpeechReg();
+        //search = YoutubeService.RecognitionText;
+    }
+    protected async Task Shazam()
+    {
+        //await YoutubeService.ShazamAPI();
+    }
+}
